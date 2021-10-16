@@ -1,11 +1,11 @@
 // (Nearly) Optimal Binary Search Tree
 // Bongki Moon (bkmoon@snu.ac.kr)
 
-import java.util.HashMap;
-import java.util.Objects;
+import java.util.Map;
+import java.util.TreeMap;
 
 public class BST { // Binary Search Tree implementation
-  private final HashMap<String, Node> nodesCache = new HashMap<>();
+  private final TreeMap<String, Node> nodesCache = new TreeMap<>();
   protected boolean NOBSTified = false;
   protected boolean OBSTified = false;
   public Node root;
@@ -40,43 +40,64 @@ public class BST { // Binary Search Tree implementation
     }
   }
 
-  private Node findNode(String key) {
-    if (root == null) {
-      return null;
-    }
-    Node result = root;
-
-    while (!Objects.equals(result.value, key)) {
-      result = result.getNext(key);
-      if (result == null) {
-        break;
-      }
-    }
-    return result;
-  }
+//  private Node findNode(String key) {
+//    if (root == null) {
+//      return null;
+//    }
+//    Node result = root;
+//
+//    while (!result.value.equals(key)) {
+//      result = result.getNext(key);
+//      if (result == null) {
+//        break;
+//      }
+//    }
+//    return result;
+//  }
 
   public boolean find(String key) {
-    return this.findNode(key) != null;
+    return nodesCache.get(key) != null;
   }
 
-  public int sumFreq() { }
-  public int sumProbes() { }
-  public int sumWeightedPath() { }
-  public void resetCounters() { }
+  public int sumFreq() {
+      return nodesCache.values().stream().mapToInt(node -> node.frequency).sum();
+  }
+  public int sumProbes() {
+      return nodesCache.values().stream().mapToInt(node -> node.accessCnt).sum();
+  }
+  public void resetCounters() {
+    nodesCache.values().forEach(Node::reset);
+  }
+
+  public int sumWeightedPath() {
+      return nodesCache.values().stream().reduce(0, (acc, node) -> (acc + node.frequency * node.level), Integer::sum);
+  }
 
   public void nobst() { }	// Set NOBSTified to true.
   public void obst() { }	// Set OBSTified to true.
-  public void print() { }
+
+  public void print() {
+    for (Map.Entry<String, Node> entry : nodesCache.entrySet()) {
+      String key = entry.getKey();
+      Node node = entry.getValue();
+      System.out.println("[" + key +":" + node.frequency + ":" + node.accessCnt +"]" );
+    }
+  }
 
   public static class Node {
     protected int frequency = 1;
     protected int accessCnt = 0;
+    protected int level = 0;
     public String value;
     public Node left;
     public Node right;
 
     public Node(String value) {
       this.value = value;
+    }
+    public Node(String value, int level) {
+      this.value = value;
+      this.level = level;
     }
 
     public Node(String value, Node left, Node right) {
@@ -86,7 +107,7 @@ public class BST { // Binary Search Tree implementation
     }
 
     public Node insertChild(String value) {
-      Node node = new Node(value);
+      Node node = new Node(value, level + 1);
       int comparator = this.value.compareTo(value);
 
       if (comparator > 0) {
@@ -101,6 +122,11 @@ public class BST { // Binary Search Tree implementation
 
     public void addFreq() {
       this.frequency +=1;
+    }
+
+    public void reset() {
+      this.accessCnt = 0;
+      this.frequency = 0;
     }
 
     public Node getNext(String val) {
