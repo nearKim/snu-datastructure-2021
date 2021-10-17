@@ -74,8 +74,52 @@ public class BST { // Binary Search Tree implementation
   }
 
   public void nobst() { }	// Set NOBSTified to true.
-  public void obst() { }	// Set OBSTified to true.
+  public void obst() {
+    OBSTified = true;
+    int size = this.size();
+    int[][] costTable = new int[size][size];
+    int[][] rootTable = new int[size][size];
+    Node[] allNodes = nodesCache.values().toArray(new Node[0]);
 
+    for (int d=0; d<size; d++) {
+      for (int i=0; i<size-d; i++) {
+        int j=d+i;
+
+        if (d == 0) {
+          // 첫번째 대각선 기본값 처리
+          costTable[i][j] = allNodes[i].frequency;
+          rootTable[i][j] = i;
+          continue;
+        }
+
+        int minimum = Integer.MAX_VALUE;
+        int freqSum = 0;
+        for (int r=i; r < j+1; r++) {
+          freqSum += allNodes[r].frequency;
+          int subtreeCost = costTable[i][r-1] + costTable[r+1][j];
+          if (subtreeCost < minimum) {
+            minimum = subtreeCost;
+            rootTable[i][j] = r;
+          }
+        }
+        costTable[i][j] = freqSum + minimum;
+      }
+    }
+
+    root = buildObst(0, size, rootTable, allNodes);
+  }
+
+  private Node buildObst(int i, int j, int[][] rootTable, Node[] allNodes) {
+    if (i == j) {
+      return null;
+    }
+    int idx = rootTable[i][j];
+    Node node = allNodes[idx];
+    node.left = buildObst(i, idx-1, rootTable, allNodes);
+    node.right = buildObst(idx+1, j, rootTable, allNodes);
+
+    return node;
+  }
   public void print() {
     for (Map.Entry<String, Node> entry : nodesCache.entrySet()) {
       String key = entry.getKey();
