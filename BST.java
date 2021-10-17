@@ -16,7 +16,7 @@ public class BST { // Binary Search Tree implementation
     return nodesCache.size();
   }
 
-  private Node insertNode(String key) {
+  protected Node insertNode(String key) {
     // 실제로 Key가 없을 경우 Node를 삽입하고 삽입된 Node를 리턴한다
     if (root == null) {
       root = new Node(key);
@@ -117,6 +117,7 @@ public class BST { // Binary Search Tree implementation
     protected int frequency = 1;
     protected int accessCnt = 0;
     protected int level = 0;
+    protected int height = 0;
     public String value;
     public Node left;
     public Node right;
@@ -129,23 +130,19 @@ public class BST { // Binary Search Tree implementation
       this.level = level;
     }
 
-    public Node(String value, Node left, Node right) {
-      this.value = value;
-      this.left = left;
-      this.right = right;
-    }
 
     public Node insertChild(String value) {
       Node node = new Node(value, level + 1);
       int comparator = this.value.compareTo(value);
 
       if (comparator > 0) {
-          this.left = node;
+        this.left = node;
       } else if (comparator < 0) {
         this.right = node;
       } else {
         System.out.println("Freq를 올려야 합니다!");
       }
+      updateHeight();
       return node;
     }
 
@@ -173,6 +170,55 @@ public class BST { // Binary Search Tree implementation
       return (this.left == null) && (this.right == null);
     }
 
+    // AVL Tree 관련 메소드들
+    public int getBalance() {
+      int leftHeight, rightHeight;
+      if (left == null) {
+        leftHeight = 0;
+      } else {
+        leftHeight = left.height;
+      }
+      if (right == null) {
+        rightHeight = 0;
+      } else {
+        rightHeight = right.height;
+      }
+      return leftHeight - rightHeight;
+
+    }
+    private void updateHeight() {
+      int leftHeight, rightHeight;
+      if (left == null) {
+        leftHeight = -1;
+      } else {
+        leftHeight = left.height;
+      }
+      if (right == null) {
+        rightHeight = -1;
+      } else {
+        rightHeight = right.height;
+      }
+      height = 1 + Math.max(leftHeight, rightHeight);
+    }
+
+    public void rotateRight() {
+      Node tmp = left.right;
+      left.right = this;
+      left = tmp;
+    }
+
+    public void rotateLeft() {
+      Node tmp = right.left;
+      right.left = this;
+      right = tmp;
+    }
+
+    public void rebalance() {
+      int balance = getBalance();
+      if (balance > 1) {
+        if (right.right)
+      }
+    }
   }
 }
 
