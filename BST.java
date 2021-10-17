@@ -40,21 +40,6 @@ public class BST { // Binary Search Tree implementation
     }
   }
 
-//  private Node findNode(String key) {
-//    if (root == null) {
-//      return null;
-//    }
-//    Node result = root;
-//
-//    while (!result.value.equals(key)) {
-//      result = result.getNext(key);
-//      if (result == null) {
-//        break;
-//      }
-//    }
-//    return result;
-//  }
-
   public boolean find(String key) {
     return nodesCache.get(key) != null;
   }
