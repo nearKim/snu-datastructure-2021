@@ -87,10 +87,12 @@ public class AVL extends BST
     y.setLeft(z);
     z.setRight(tmp);
 
+    if (z == this.root) {
+      this.root = y;
+    }
     // z는 내려가고 y는 올라옴
     z.level++;
     y.level--;
-    //
     decreaseLevel(y.right);
     increaseLevel(z.left);
   }
@@ -100,6 +102,10 @@ public class AVL extends BST
     Node tmp = y.right;
     y.setRight(z);
     z.setLeft(tmp);
+
+    if (z == this.root) {
+      this.root = y;
+    }
 
     // z는 내려가고(level up) y는 올라옴(level down)
     z.level++;
@@ -158,10 +164,10 @@ public class AVL extends BST
   }
 
   public int getBalanceFactor(Node node) {
-    if (node == null) return 0;
+    if (node == null) return -1;
 
-    int leftHeight = node.left == null ? 0 : node.left.height;
-    int rightHeight = node.right == null ? 0 : node.right.height;
+    int leftHeight = node.left == null ? -1 : node.left.height;
+    int rightHeight = node.right == null ? -1 : node.right.height;
     return leftHeight - rightHeight;
   }
 }

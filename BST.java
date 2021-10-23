@@ -10,6 +10,7 @@ public class BST { // Binary Search Tree implementation
   private final TreeMap<String, Node> nodesCache = new TreeMap<>();
   protected boolean NOBSTified = false;
   protected boolean OBSTified = false;
+  protected boolean shouldRecalculateLevel = false;
   public Node root;
 
   public BST() {  }
@@ -64,7 +65,9 @@ public class BST { // Binary Search Tree implementation
   }
 
   public int sumWeightedPath() {
-    calculateLevels(this.root, 0);
+    if (shouldRecalculateLevel) {
+      calculateLevels(this.root, 0);
+    }
     return nodesCache.values().stream().reduce(0, (acc, node) -> (acc + node.frequency * (1 + node.level)), Integer::sum);
   }
 
@@ -79,6 +82,8 @@ public class BST { // Binary Search Tree implementation
   public void nobst() { }	// Set NOBSTified to true.
   public void obst() {
     OBSTified = true;
+    shouldRecalculateLevel = true;
+
     int size = this.size();
     int[][] costTable = new int[size][size];
     int[][] rootTable = new int[size][size];
