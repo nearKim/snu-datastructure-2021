@@ -20,7 +20,7 @@ public class AVL extends BST
     Node insertedNode = super.insertNode(key);
 
     // Level 1까지는 Rotation을 할 필요가 없다
-    if (insertedNode.level < 3) return insertedNode;
+    if (insertedNode.level < 2) return insertedNode;
 
     // X: 현재 Node, Y: 부모 Node, Z: 조부모 Node
     Node x = insertedNode;
@@ -65,11 +65,34 @@ public class AVL extends BST
     }
     return insertedNode;
   }
+
+  private void increaseLevel(Node root) {
+    if (root != null) {
+      root.level++;
+      increaseLevel(root.left);
+      increaseLevel(root.right);
+    }
+  }
+  private void decreaseLevel(Node root) {
+    if (root != null) {
+      root.level--;
+      decreaseLevel(root.left);
+      decreaseLevel(root.right);
+    }
+  }
+
   private void rotateLeft(Node y, Node z) {
     y.parent = z.parent;
     Node tmp = y.left;
     y.setLeft(z);
     z.setRight(tmp);
+
+    // z는 내려가고 y는 올라옴
+    z.level++;
+    y.level--;
+    //
+    decreaseLevel(y.right);
+    increaseLevel(z.left);
   }
 
   private void rotateRight(Node y, Node z) {
@@ -77,15 +100,25 @@ public class AVL extends BST
     Node tmp = y.right;
     y.setRight(z);
     z.setLeft(tmp);
+
+    // z는 내려가고(level up) y는 올라옴(level down)
+    z.level++;
+    y.level--;
+    // y의 left subtree는 올라오고 (level down) z의 right subtree는 내려감 (level up)
+    decreaseLevel(y.left);
+    increaseLevel(z.right);
+
   }
 
   private void rotateLeftRight(Node x, Node y, Node z) {
+    // TODO: Level 조정 최적화
     // 가장 아래 2개인 x < y Rotate
     rotateLeft(x, y);
     // x가 올라오므로 위의 2개인 x < z Rotate
     rotateRight(x, z);
   }
   private void rotateRightLeft(Node x, Node y, Node z) {
+    // TODO: Level 조정 최적화
     rotateRight(x, y);
     rotateLeft(x, z);
   }

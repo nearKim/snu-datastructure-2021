@@ -64,7 +64,7 @@ public class BST { // Binary Search Tree implementation
   }
 
   public int sumWeightedPath() {
-      return nodesCache.values().stream().reduce(0, (acc, node) -> (acc + node.frequency * node.level), Integer::sum);
+      return nodesCache.values().stream().reduce(0, (acc, node) -> (acc + node.frequency * (1 + node.level)), Integer::sum);
   }
 
   public void nobst() { }	// Set NOBSTified to true.
@@ -125,7 +125,7 @@ public class BST { // Binary Search Tree implementation
   public static class Node {
     protected int frequency = 1;
     protected int accessCnt = 0;
-    protected int level = 1;
+    protected int level = 0;
     protected int height = 0;
     public String value;
     public Node parent;
