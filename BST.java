@@ -21,10 +21,10 @@ public class BST { // Binary Search Tree implementation
   protected Node insertNode(String key) {
     // 실제로 Key가 없을 경우 Node를 삽입하고 삽입된 Node를 리턴한다
     if (root == null) {
-      root = new Node(key);
-      return root;
+      this.root = new Node(key);
+      return this.root;
     }
-    Node node = root;
+    Node node = this.root;
     while (!node.isLeaf()) {
       node = node.getNext(key);
     }
@@ -126,7 +126,7 @@ public class BST { // Binary Search Tree implementation
     public Node right;
 
     public Node(String value) {
-      new Node(value, null);
+      this.value = value;
     }
 
     public Node(String value, Node parent) {
