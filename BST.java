@@ -117,22 +117,29 @@ public class BST { // Binary Search Tree implementation
     protected int frequency = 1;
     protected int accessCnt = 0;
     protected int level = 0;
-    protected int height = 0;
     public String value;
+    public Node parent;
     public Node left;
     public Node right;
 
     public Node(String value) {
-      this.value = value;
+      new Node(value, null);
     }
-    public Node(String value, int level) {
+
+    public Node(String value, Node parent) {
       this.value = value;
+      this.parent = parent;
+    }
+
+    public Node(String value, Node parent, int level) {
+      this.value = value;
+      this.parent = parent;
       this.level = level;
     }
 
-
     public Node insertChild(String value) {
-      Node node = new Node(value, level + 1);
+      Node node = new Node(value,this, level + 1);
+
       int comparator = this.value.compareTo(value);
 
       if (comparator > 0) {
@@ -142,7 +149,6 @@ public class BST { // Binary Search Tree implementation
       } else {
         System.out.println("Freq를 올려야 합니다!");
       }
-      updateHeight();
       return node;
     }
 
@@ -168,56 +174,6 @@ public class BST { // Binary Search Tree implementation
 
     public boolean isLeaf() {
       return (this.left == null) && (this.right == null);
-    }
-
-    // AVL Tree 관련 메소드들
-    public int getBalance() {
-      int leftHeight, rightHeight;
-      if (left == null) {
-        leftHeight = 0;
-      } else {
-        leftHeight = left.height;
-      }
-      if (right == null) {
-        rightHeight = 0;
-      } else {
-        rightHeight = right.height;
-      }
-      return leftHeight - rightHeight;
-
-    }
-    private void updateHeight() {
-      int leftHeight, rightHeight;
-      if (left == null) {
-        leftHeight = -1;
-      } else {
-        leftHeight = left.height;
-      }
-      if (right == null) {
-        rightHeight = -1;
-      } else {
-        rightHeight = right.height;
-      }
-      height = 1 + Math.max(leftHeight, rightHeight);
-    }
-
-    public void rotateRight() {
-      Node tmp = left.right;
-      left.right = this;
-      left = tmp;
-    }
-
-    public void rotateLeft() {
-      Node tmp = right.left;
-      right.left = this;
-      right = tmp;
-    }
-
-    public void rebalance() {
-      int balance = getBalance();
-      if (balance > 1) {
-        if (right.right)
-      }
     }
   }
 }
