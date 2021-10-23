@@ -64,7 +64,16 @@ public class BST { // Binary Search Tree implementation
   }
 
   public int sumWeightedPath() {
-      return nodesCache.values().stream().reduce(0, (acc, node) -> (acc + node.frequency * (1 + node.level)), Integer::sum);
+    calculateLevels(this.root, 0);
+    return nodesCache.values().stream().reduce(0, (acc, node) -> (acc + node.frequency * (1 + node.level)), Integer::sum);
+  }
+
+  public void calculateLevels(Node node, int level) {
+    if (node == null) return;
+
+    node.level = level;
+    calculateLevels(node.left, level + 1);
+    calculateLevels(node.right, level + 1);
   }
 
   public void nobst() { }	// Set NOBSTified to true.
@@ -88,9 +97,13 @@ public class BST { // Binary Search Tree implementation
 
         int minimum = Integer.MAX_VALUE;
         int freqSum = 0;
-        for (int r=i; r < j+1; r++) {
+        for (int r=i; r <= j; r++) {
           freqSum += allNodes[r].frequency;
-          int subtreeCost = costTable[i][r-1] + costTable[r+1][j];
+
+          int lhs = r-1 < 0 ? 0 : costTable[i][r-1];
+          int rhs = r+1 >= size ? 0 : costTable[r+1][j];
+          int subtreeCost =  lhs + rhs;
+
           if (subtreeCost < minimum) {
             minimum = subtreeCost;
             rootTable[i][j] = r;
@@ -100,17 +113,20 @@ public class BST { // Binary Search Tree implementation
       }
     }
 
-    root = buildObst(0, size, rootTable, allNodes);
+    this.root = buildObst(0, size-1, rootTable, allNodes);
+    if (this.root != null) {
+      this.root.parent = null;
+    }
   }
 
-  private Node buildObst(int i, int j, int[][] rootTable, Node[] allNodes) {
-    if (i == j) {
+  private Node buildObst(int left, int right, int[][] rootTable, Node[] allNodes) {
+    if (left > right) {
       return null;
     }
-    int idx = rootTable[i][j];
+    int idx = rootTable[left][right];
     Node node = allNodes[idx];
-    node.setLeft(buildObst(i, idx-1, rootTable, allNodes));
-    node.setRight(buildObst(idx+1, j, rootTable, allNodes));
+    node.setLeft(buildObst(left, idx-1, rootTable, allNodes));
+    node.setRight(buildObst(idx+1, right, rootTable, allNodes));
 
     return node;
   }
