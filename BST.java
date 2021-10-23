@@ -4,6 +4,8 @@
 import java.util.Map;
 import java.util.TreeMap;
 
+import static java.lang.Math.max;
+
 public class BST { // Binary Search Tree implementation
   private final TreeMap<String, Node> nodesCache = new TreeMap<>();
   protected boolean NOBSTified = false;
@@ -117,6 +119,7 @@ public class BST { // Binary Search Tree implementation
     protected int frequency = 1;
     protected int accessCnt = 0;
     protected int level = 0;
+    protected int height = 0;
     public String value;
     public Node parent;
     public Node left;
@@ -149,7 +152,27 @@ public class BST { // Binary Search Tree implementation
       } else {
         System.out.println("Freq를 올려야 합니다!");
       }
+      updateHeight();
       return node;
+    }
+
+    private void updateParentsHeight() {
+      Node p = parent;
+      while (p != null) {
+        p.updateSelfHeight();
+        p = p.parent;
+      }
+    }
+
+    private void updateSelfHeight() {
+      int leftHeight = left == null ? -1 : left.height;
+      int rightHeight = right == null ? -1 : right.height;
+      this.height = 1 + max(leftHeight, rightHeight);
+    }
+
+    public void updateHeight() {
+      this.updateSelfHeight();
+      this.updateParentsHeight();
     }
 
     public void addFreq() {
