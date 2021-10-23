@@ -102,8 +102,8 @@ public class BST { // Binary Search Tree implementation
     }
     int idx = rootTable[i][j];
     Node node = allNodes[idx];
-    node.left = buildObst(i, idx-1, rootTable, allNodes);
-    node.right = buildObst(idx+1, j, rootTable, allNodes);
+    node.setLeft(buildObst(i, idx-1, rootTable, allNodes));
+    node.setRight(buildObst(idx+1, j, rootTable, allNodes));
 
     return node;
   }
@@ -140,17 +140,31 @@ public class BST { // Binary Search Tree implementation
       this.level = level;
     }
 
+    public void setLeft(Node leftNode) {
+      this.left = leftNode;
+      if (leftNode != null) {
+        leftNode.parent = this;
+      }
+    }
+
+    public void setRight(Node rightNode) {
+      this.right = rightNode;
+      if (rightNode != null) {
+        rightNode.parent = this;
+      }
+    }
+
     public Node insertChild(String value) {
       Node node = new Node(value,this, level + 1);
 
       int comparator = this.value.compareTo(value);
 
       if (comparator > 0) {
-        this.left = node;
+        setLeft(node);
       } else if (comparator < 0) {
-        this.right = node;
+        setRight(node);
       } else {
-        System.out.println("Freq를 올려야 합니다!");
+        throw new IllegalArgumentException("기존값과 동일한 value가 insertChild에 들어왔습니다");
       }
       updateHeight();
       return node;
