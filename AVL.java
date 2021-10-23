@@ -20,7 +20,7 @@ public class AVL extends BST
     Node insertedNode = super.insertNode(key);
 
     // Level 1까지는 Rotation을 할 필요가 없다
-    if (insertedNode.level < 2) return insertedNode;
+    if (insertedNode.level < 3) return insertedNode;
 
     // X: 현재 Node, Y: 부모 Node, Z: 조부모 Node
     Node x = insertedNode;

@@ -125,7 +125,7 @@ public class BST { // Binary Search Tree implementation
   public static class Node {
     protected int frequency = 1;
     protected int accessCnt = 0;
-    protected int level = 0;
+    protected int level = 1;
     protected int height = 0;
     public String value;
     public Node parent;
