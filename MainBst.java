@@ -36,17 +36,14 @@ public class MainBst {
 
     AVL avl = new AVL();
     buildBST(avl, args[0]);
-    System.out.println("Number of words in the BST: "+obst.size()
-		+" (number of insertions: "+obst.sumFreq()+")");
+    System.out.println("Number of words in the BST: " + obst.size() + " (number of insertions: " + obst.sumFreq() + ")");
 
     // (2) Probe the plain BST and AVL for the words in query set.
-    System.out.println("Sum of Weighted Path Lengths (BST): "
-		+bst.sumWeightedPath());
+    System.out.println("Sum of Weighted Path Lengths (BST): " + bst.sumWeightedPath());
     bst.resetCounters();
     probeBST(bst,args[1]);
 
-    System.out.println("Sum of Weighted Path Lengths (AVL): "
-		+avl.sumWeightedPath());
+    System.out.println("Sum of Weighted Path Lengths (AVL): " + avl.sumWeightedPath());
     avl.resetCounters();
     probeBST(avl,args[1]);
 
@@ -54,10 +51,8 @@ public class MainBst {
     cputime = TMB.getCurrentThreadCpuTime();
     nobst.nobst();
     cputime = TMB.getCurrentThreadCpuTime() - cputime;
-    System.out.println("CPU time to convert to an NOBST: "
-		+(cputime/1000000)+" millisec");
-    System.out.println("Sum of Weighted Path Lengths (NOBST): "
-		+nobst.sumWeightedPath());
+    System.out.println("CPU time to convert to an NOBST: " + (cputime/1000000)+" millisec");
+    System.out.println("Sum of Weighted Path Lengths (NOBST): "+ nobst.sumWeightedPath());
 
     nobst.resetCounters();
     probeBST(nobst,args[1]);
@@ -66,17 +61,14 @@ public class MainBst {
     cputime = TMB.getCurrentThreadCpuTime();
     obst.obst();
     cputime = TMB.getCurrentThreadCpuTime() - cputime;
-    System.out.println("CPU time to convert to an OBST: "
-		+(cputime/1000000)+" millisec");
-    System.out.println("Sum of Weighted Path Lengths (OBST): "
-		+obst.sumWeightedPath());
+    System.out.println("CPU time to convert to an OBST: "+ (cputime/1000000) + " millisec");
+    System.out.println("Sum of Weighted Path Lengths (OBST): "+ obst.sumWeightedPath());
 
     obst.resetCounters();
     probeBST(obst,args[1]);
 
     Runtime runtime = Runtime.getRuntime();
-    System.out.println("Memory consumption: "
-		+ (runtime.totalMemory() - runtime.freeMemory()) + " bytes");
+    System.out.println("Memory consumption: " + (runtime.totalMemory() - runtime.freeMemory()) + " bytes");
   }
 
   public static void buildBST(BST bst, String input)
@@ -89,8 +81,7 @@ public class MainBst {
 
     bst.print();
     String bstType = (bst instanceof AVL)? "AVL" : "BST";
-    System.out.println("CPU time to build a(n) "+bstType+": "
-				+(cputime/1000000)+" millisec");
+    System.out.println("CPU time to build a(n) "+bstType+": " +(cputime/1000000)+ " millisec");
   }
 
   public static void probeBST(BST bst, String keys)
