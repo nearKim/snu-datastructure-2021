@@ -43,7 +43,14 @@ public class BST { // Binary Search Tree implementation
   }
 
   public boolean find(String key) {
-    return nodesCache.get(key) != null;
+    Node node = nodesCache.get(key);
+    if (node == null) return false;
+
+    while (node != null) {
+      node.addAccessCnt();
+      node = node.parent;
+    }
+    return true;
   }
 
   public int sumFreq() {
@@ -190,7 +197,11 @@ public class BST { // Binary Search Tree implementation
     }
 
     public void addFreq() {
-      this.frequency +=1;
+      this.frequency += 1;
+    }
+
+    public void addAccessCnt() {
+      this.accessCnt += 1;
     }
 
     public void reset() {
@@ -199,7 +210,6 @@ public class BST { // Binary Search Tree implementation
     }
 
     public Node getNext(String val) {
-      this.accessCnt += 1;
       if (this.value.equals(val)) {
         return this;
       } else if (this.value.compareTo(val) > 0) {
