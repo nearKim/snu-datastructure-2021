@@ -1,13 +1,10 @@
 // (Nearly) Optimal Binary Search Tree
 // Bongki Moon (bkmoon@snu.ac.kr)
 
-import java.util.Arrays;
 import java.util.Map;
 import java.util.TreeMap;
-import java.util.stream.Stream;
 
 import static java.lang.Math.max;
-import static java.lang.Math.min;
 
 public class BST { // Binary Search Tree implementation
   private final TreeMap<String, Node> nodesCache = new TreeMap<>();
