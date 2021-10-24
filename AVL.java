@@ -46,6 +46,8 @@ public class AVL extends BST
     if (unbalancedNodeFound) {
       // X, Y, Z의 생김새에 따라 Rotate을 시킨다
       int rotationStrategy = selectRotationStrategy(x, y, z);
+      shouldRecalculateLevel = true;
+
       switch (rotationStrategy){
         case LEFT:
           rotateLeft(y, z);
@@ -64,21 +66,6 @@ public class AVL extends BST
       }
     }
     return insertedNode;
-  }
-
-  private void increaseLevel(Node node) {
-    if (node != null) {
-      node.level++;
-      increaseLevel(node.left);
-      increaseLevel(node.right);
-    }
-  }
-  private void decreaseLevel(Node node) {
-    if (node != null) {
-      node.level--;
-      decreaseLevel(node.left);
-      decreaseLevel(node.right);
-    }
   }
 
   private void swapParent(Node y, Node z) {
@@ -106,11 +93,6 @@ public class AVL extends BST
     if (z == this.root) {
       this.root = y;
     }
-    // z는 내려가고 y는 올라옴
-    z.level++;
-    y.level--;
-    decreaseLevel(y.right);
-    increaseLevel(z.left);
   }
 
   private void rotateRight(Node y, Node z) {
@@ -122,25 +104,16 @@ public class AVL extends BST
     if (z == this.root) {
       this.root = y;
     }
-
-    // z는 내려가고(level up) y는 올라옴(level down)
-    z.level++;
-    y.level--;
-    // y의 left subtree는 올라오고 (level down) z의 right subtree는 내려감 (level up)
-    decreaseLevel(y.left);
-    increaseLevel(z.right);
-
   }
 
   private void rotateLeftRight(Node x, Node y, Node z) {
-    // TODO: Level 조정 최적화
     // 가장 아래 2개인 x < y Rotate
     rotateLeft(x, y);
     // x가 올라오므로 위의 2개인 x < z Rotate
     rotateRight(x, z);
   }
+
   private void rotateRightLeft(Node x, Node y, Node z) {
-    // TODO: Level 조정 최적화
     rotateRight(x, y);
     rotateLeft(x, z);
   }

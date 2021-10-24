@@ -49,15 +49,24 @@ public class BST { // Binary Search Tree implementation
     }
   }
 
-  public boolean find(String key) {
-    Node node = nodesCache.get(key);
-    if (node == null) return false;
+  private Node findNode(Node node, String key) {
+    if (node == null) return null;
 
-    while (node != null) {
-      node.addAccessCnt();
-      node = node.parent;
+    int comp = node.value.compareTo(key);
+    node.addAccessCnt();
+
+    if (comp == 0) {
+      return node;
+    } else if (comp < 0) {
+      return findNode(node.right, key);
+    } else {
+      return findNode(node.left, key);
     }
-    return true;
+  }
+
+  public boolean find(String key) {
+    Node foundNode = findNode(this.root, key);
+    return foundNode != null;
   }
 
   public int sumFreq() {
