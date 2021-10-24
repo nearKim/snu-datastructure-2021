@@ -68,44 +68,40 @@ public class AVL extends BST
     return insertedNode;
   }
 
-  private void swapParent(Node y, Node z) {
-    // 새로운 Subtree root 을 기존 Parent와 연결한다
-    Node tmp = z.parent;
-    y.parent = tmp;
-
-    if (tmp == null) return;
-
-    if (tmp.left == z) {
-      tmp.setLeft(y);
-    } else if (tmp.right == z) {
-      tmp.setRight(y);
+  private void processGrandparentLeftRight(Node y, Node z) {
+    if (z == this.root) {
+      y.parent = null;
+      this.root = y;
     } else {
-      throw new IllegalArgumentException("이상한 low high");
+      Node zParent = z.parent;
+      y.parent = zParent;
+
+      if (zParent.left == z) {
+        zParent.left = y;
+      } else {
+        zParent.right = y;
+      }
     }
   }
 
   private void rotateLeft(Node y, Node z) {
-    swapParent(y, z);
+    processGrandparentLeftRight(y, z);
+
     Node tmp = y.left;
     y.setLeft(z);
     z.setRight(tmp);
-    y.updateHeight();
 
-    if (z == this.root) {
-      this.root = y;
-    }
+    z.updateHeight();
   }
 
   private void rotateRight(Node y, Node z) {
-    swapParent(y, z);
+    processGrandparentLeftRight(y, z);
+
     Node tmp = y.right;
     y.setRight(z);
     z.setLeft(tmp);
-    y.updateHeight();
 
-    if (z == this.root) {
-      this.root = y;
-    }
+    z.updateHeight();
   }
 
   private void rotateLeftRight(Node x, Node y, Node z) {
