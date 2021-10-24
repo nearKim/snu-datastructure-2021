@@ -89,6 +89,7 @@ public class AVL extends BST
     Node tmp = y.left;
     y.setLeft(z);
     z.setRight(tmp);
+    y.updateHeight();
 
     if (z == this.root) {
       this.root = y;
@@ -100,6 +101,7 @@ public class AVL extends BST
     Node tmp = y.right;
     y.setRight(z);
     z.setLeft(tmp);
+    y.updateHeight();
 
     if (z == this.root) {
       this.root = y;
