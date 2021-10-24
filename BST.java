@@ -26,8 +26,14 @@ public class BST { // Binary Search Tree implementation
       return this.root;
     }
     Node node = this.root;
-    while (!node.isLeaf()) {
-      node = node.getNext(key);
+    while (true) {
+      if (node.isLeaf()) break;
+
+      Node nextNode = node.getNext(key);
+
+      if (nextNode == null) break;
+
+      node = nextNode;
     }
     node = node.insertChild(key);
     return node;
