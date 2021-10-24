@@ -19,6 +19,17 @@ public class BST { // Binary Search Tree implementation
     return nodesCache.size();
   }
 
+  protected int height(Node node) {
+    if (node == null) return -1;
+    return node.height;
+  }
+
+  protected void updateHeight(Node node) {
+    if (node != null) {
+      node.height = 1 + Math.max(height(node.left), height(node.right));
+    }
+  }
+
   protected Node insertNode(String key) {
     // 실제로 Key가 없을 경우 Node를 삽입하고 삽입된 Node를 리턴한다
     if (root == null) {
@@ -72,9 +83,11 @@ public class BST { // Binary Search Tree implementation
   public int sumFreq() {
       return nodesCache.values().stream().mapToInt(node -> node.frequency).sum();
   }
+
   public int sumProbes() {
       return nodesCache.values().stream().mapToInt(node -> node.accessCnt).sum();
   }
+
   public void resetCounters() {
     nodesCache.values().forEach(Node::reset);
   }
@@ -195,6 +208,7 @@ public class BST { // Binary Search Tree implementation
 
     return node;
   }
+
   public void print() {
     for (Map.Entry<String, Node> entry : nodesCache.entrySet()) {
       String key = entry.getKey();
@@ -254,27 +268,7 @@ public class BST { // Binary Search Tree implementation
       } else {
         throw new IllegalArgumentException("기존값과 동일한 value가 insertChild에 들어왔습니다");
       }
-      updateHeight();
       return node;
-    }
-
-    private void updateParentsHeight() {
-      Node p = parent;
-      while (p != null) {
-        p.updateSelfHeight();
-        p = p.parent;
-      }
-    }
-
-    private void updateSelfHeight() {
-      int leftHeight = left == null ? -1 : left.height;
-      int rightHeight = right == null ? -1 : right.height;
-      this.height = 1 + max(leftHeight, rightHeight);
-    }
-
-    public void updateHeight() {
-      this.updateSelfHeight();
-      this.updateParentsHeight();
     }
 
     public void addFreq() {

@@ -8,6 +8,7 @@ public class AVL extends BST
   public static final int RIGHT = 1;
   public static final int LEFT_RIGHT = 2;
   public static final int RIGHT_LEFT = 3;
+  public static final int DO_NOTHING = -1;
 
   public AVL() { }
 
@@ -15,56 +16,98 @@ public class AVL extends BST
     super.insert(key);
   }
 
+  private int getRebalanceStrategy(Node node) {
+    if (getBalanceFactor(node) == -2) {
+      if (getBalanceFactor(node.right) < 0) {
+        return LEFT;
+      } else {
+        return RIGHT_LEFT;
+      }
+    } else if (getBalanceFactor(node) == 2) {
+      if (getBalanceFactor(node.left) > 0) {
+        return RIGHT;
+      } else {
+        return LEFT_RIGHT;
+      }
+    }
+    return DO_NOTHING;
+  }
+
+  private void rebalance(Node node) {
+    updateHeight(node);
+
+    switch (getRebalanceStrategy(node)) {
+      case LEFT:
+        node = rotateLeft(node);
+        break;
+      case RIGHT:
+        node = rotateRight(node);
+        break;
+      case LEFT_RIGHT:
+        node = rotateLeftRight(node);
+        break;
+      case RIGHT_LEFT:
+        node = rotateRightLeft(node);
+        break;
+      case DO_NOTHING:
+        break;
+    }
+
+    if (node.parent == null) {
+      this.root = node;
+      return;
+    }
+    rebalance(node.parent);
+  }
+
+  private Node rotateLeft(Node upper) {
+    this.shouldRecalculateLevel = true;
+    Node lower = upper.right;
+    processGrandparentLeftRight(lower, upper);
+
+    upper.setRight(lower.left);
+    lower.setLeft(upper);
+
+    updateHeight(upper);
+    updateHeight(lower);
+
+    // 새로운 upper 노드
+    return lower;
+  }
+
+  private Node rotateRight(Node upper) {
+    this.shouldRecalculateLevel = true;
+    Node lower = upper.left;
+    processGrandparentLeftRight(lower, upper);
+
+    upper.setLeft(lower.right);
+    lower.setRight(upper);
+
+    updateHeight(upper);
+    updateHeight(lower);
+
+    // 새로운 upper 노드
+    return lower;
+  }
+
+  private Node rotateLeftRight(Node upper) {
+    upper.left = rotateLeft(upper.left);
+    return rotateRight(upper);
+  }
+
+  private Node rotateRightLeft(Node upper) {
+    upper.right = rotateRight(upper.right);
+    return rotateLeft(upper);
+  }
+
   @Override
   protected Node insertNode(String key) {
     Node insertedNode = super.insertNode(key);
 
-    // Level 1까지는 Rotation을 할 필요가 없다
-    if (insertedNode.level < 2) return insertedNode;
-
-    // X: 현재 Node, Y: 부모 Node, Z: 조부모 Node
-    Node x = insertedNode;
-    Node y = x.parent;
-    Node z = y.parent;
-    boolean unbalancedNodeFound = false;
-
-    // insertedNode 기준으로 parent를 찾으면서 unbalanced node(Z)를 찾는다
-    while (true) {
-      int grandParentBF = getBalanceFactor(z);
-      if (grandParentBF > 1 || grandParentBF < -1) {
-        unbalancedNodeFound = true;
-        break;
-      }
-      if (z == root) break;
-
-      // 손자(X), 자식(Y) node를 저장한다
-      x = y;
-      y = z;
-      z = z.parent;
+    if (insertedNode.level > 1) {
+      rebalance(insertedNode);
     }
 
-    if (unbalancedNodeFound) {
-      // X, Y, Z의 생김새에 따라 Rotate을 시킨다
-      int rotationStrategy = selectRotationStrategy(x, y, z);
-      shouldRecalculateLevel = true;
-
-      switch (rotationStrategy){
-        case LEFT:
-          rotateLeft(y, z);
-          break;
-        case RIGHT:
-          rotateRight(y, z);
-          break;
-        case LEFT_RIGHT:
-          rotateLeftRight(x, y, z);
-          break;
-        case RIGHT_LEFT:
-          rotateRightLeft(x, y, z);
-          break;
-        default:
-          throw new IllegalStateException("Unexpected value: " + rotationStrategy);
-      }
-    }
     return insertedNode;
   }
 
@@ -80,72 +123,6 @@ public class AVL extends BST
         zParent.left = y;
       } else {
         zParent.right = y;
-      }
-    }
-  }
-
-  private void rotateLeft(Node y, Node z) {
-    processGrandparentLeftRight(y, z);
-
-    Node tmp = y.left;
-    y.setLeft(z);
-    z.setRight(tmp);
-
-    z.updateHeight();
-  }
-
-  private void rotateRight(Node y, Node z) {
-    processGrandparentLeftRight(y, z);
-
-    Node tmp = y.right;
-    y.setRight(z);
-    z.setLeft(tmp);
-
-    z.updateHeight();
-  }
-
-  private void rotateLeftRight(Node x, Node y, Node z) {
-    // 가장 아래 2개인 x < y Rotate
-    rotateLeft(x, y);
-    // x가 올라오므로 위의 2개인 x < z Rotate
-    rotateRight(x, z);
-  }
-
-  private void rotateRightLeft(Node x, Node y, Node z) {
-    rotateRight(x, y);
-    rotateLeft(x, z);
-  }
-
-  private int selectRotationStrategy(Node x, Node y, Node z) {
-    // 현재, 부모, 조부모 Node의 key를 이용하여 회전방향을 정한다
-    String x_val = x.value;
-    String y_val = y.value;
-    String z_val = z.value;
-    int z_y_cmp = z_val.compareTo(y_val);
-    int y_x_cmp = y_val.compareTo(x_val);
-
-    if (z_y_cmp == 0 || y_x_cmp == 0) {
-      throw new IllegalArgumentException("X, Y, Z 중 동일한 값이 들어왔습니다.");
-    }
-
-    if (z_y_cmp < 0) {
-      // Z < Y: Y가 Z 오른쪽
-      if (y_x_cmp < 0) {
-        // Y < X: X가 Y 오른쪽
-        // Y를 중심으로 Left Rotation
-        return LEFT;
-      } else {
-        // Y > X: X가 Y 왼쪽
-        // Y를 중심으로 Right Rotation + 새로운 X 중심으로 Left Rotation
-        return RIGHT_LEFT;
-      }
-    } else {
-      //
-      if (y_x_cmp < 0) {
-        // y_val < x_val: x가 y 오른쪽
-        return LEFT_RIGHT;
-      } else {
-        return RIGHT;
       }
     }
   }
