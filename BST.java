@@ -1,10 +1,13 @@
 // (Nearly) Optimal Binary Search Tree
 // Bongki Moon (bkmoon@snu.ac.kr)
 
+import java.util.Arrays;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.stream.Stream;
 
 import static java.lang.Math.max;
+import static java.lang.Math.min;
 
 public class BST { // Binary Search Tree implementation
   private final TreeMap<String, Node> nodesCache = new TreeMap<>();
@@ -79,7 +82,52 @@ public class BST { // Binary Search Tree implementation
     calculateLevels(node.right, level + 1);
   }
 
-  public void nobst() { }	// Set NOBSTified to true.
+  public void nobst() {
+    NOBSTified = true;
+    shouldRecalculateLevel = true;
+    Node[] allNodes = nodesCache.values().toArray(new Node[0]);
+    this.root = getMinWeightDiffNode(0, size(), sumFreq(), allNodes);
+    if (this.root != null) {
+      this.root.parent = null;
+    }
+  }
+
+  private Node getMinWeightDiffNode(int left, int right, int totalSum, Node[] sortedNodeArr) {
+    if (left >= right) {
+      return null;
+    } else if (left + 1 == right) {
+      Node resultNode = sortedNodeArr[left];
+      resultNode.left = null;
+      resultNode.right = null;
+      return resultNode;
+    }
+    var wrapper = new Object() {
+      int resultIdx = left;
+      int leftTotalSum = 0;
+      int rightTotalSum = 0;
+    };
+    int minDiff = Integer.MAX_VALUE;
+    int leftSum = 0;
+    int rightSum = totalSum;
+
+    for (int i=left; i<right; i++) {
+      Node curNode = sortedNodeArr[i];
+      rightSum -= curNode.frequency;
+      int diff = Math.abs(leftSum - rightSum);
+      if (diff < minDiff) {
+        minDiff = diff;
+        wrapper.resultIdx = i;
+        wrapper.leftTotalSum = leftSum;
+        wrapper.rightTotalSum = rightSum;
+      }
+      leftSum += curNode.frequency;
+    }
+    Node resultNode = sortedNodeArr[wrapper.resultIdx];
+    resultNode.setLeft(getMinWeightDiffNode(left, wrapper.resultIdx, wrapper.leftTotalSum, sortedNodeArr));
+    resultNode.setRight(getMinWeightDiffNode(wrapper.resultIdx+1, right, wrapper.rightTotalSum, sortedNodeArr));
+    return resultNode;
+  }
+
   public void obst() {
     OBSTified = true;
     shouldRecalculateLevel = true;
